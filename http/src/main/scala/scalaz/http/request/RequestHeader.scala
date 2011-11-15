@@ -211,8 +211,8 @@ trait RequestHeaders {
    */
   implicit def StringRequestHeader(s: String): Option[RequestHeader] =
     RequestHeader.headers find {case (n, h) => n.equalsIgnoreCase(s) } map (_._2) orElse
-            (s: Option[GeneralHeader]) ∘ (scalaz.http.request.General(_)) orElse
-            (s: Option[EntityHeader]) ∘ (scalaz.http.request.Entity(_))
+            (s: Option[GeneralHeader]).map(scalaz.http.request.General(_)) orElse
+            (s: Option[EntityHeader]).map(scalaz.http.request.Entity(_))
 
   /**
    * Converts the given list of characters to a request header. If the string is a known request header, then it is
@@ -284,7 +284,7 @@ object RequestHeader extends RequestHeaders {
   def requestHeaderValue(cs: List[Char]): Option[(RequestHeader, NonEmptyList[Char])] =
     cs span (_ != ':') match {
       case (n, v) => {
-        (n: Option[RequestHeader]) ∗ (h =>
+        (n: Option[RequestHeader]) flatMap (h =>
           (v.dropWhile(x => x == ':' || isWhitespace(x))).toNel map (v => (h, v)))
       }
     }

@@ -61,13 +61,13 @@ sealed trait HttpServletRequest {
    * Converts this request into a scalaz request.
    */
   def asRequest[I[_]](implicit in: InputStreamer[I]) = {
-      val headers: List[(RequestHeader, NonEmptyList[Char])] = request.getHeaderNames.elements.map(_.asInstanceOf[String]).toList ∗
+      val headers: List[(RequestHeader, NonEmptyList[Char])] = request.getHeaderNames.elements.map(_.asInstanceOf[String]).toList flatMap
               (h => request.getHeaders(h).elements.map(_.asInstanceOf[String]).filter(_.length > 0).map
                         (v => ((h: Option[RequestHeader]).get, v.toList.toNel.get)).toList)
 
-      val rline = (request.getMethod.toList: Option[Method]) >>= (m =>
+      val rline = (request.getMethod.toList: Option[Method]) flatMap (m =>
         request.getRequestURI.toList.toNel map
-                (p => uri(p, Option(request.getQueryString) map (_.toList))) >>=
+                (p => uri(p, Option(request.getQueryString) map (_.toList))) flatMap
                 (u => (request.getProtocol: Option[Version]) map
                         (v => line(m, u, v))))
 
@@ -105,7 +105,7 @@ object HttpServletRequest extends HttpServletRequests {
    */
   def c[IN[_]](r: Request[IN])(implicit request: HttpServletRequest) = {
     val k: Option[NonEmptyList[Char]] = (r.path drop request.getContextPath.length).toNel
-    k ∘ (p => r(r.uri(p))) | r
+    k.map (p => r(r.uri(p))) | r
   }
 
   object MethodPath {

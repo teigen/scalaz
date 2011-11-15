@@ -29,7 +29,7 @@ sealed trait HttpSession {
    *         of <tt>A</tt>.
    */
   def getOrAdd[A](attr: String, default: =>A) = 
-    (apply(attr) ∘ ((v : Object) => v.asInstanceOf[A])) | {
+    (apply(attr) map ((v : Object) => v.asInstanceOf[A])) | {
       update(attr, default)
       default
     }

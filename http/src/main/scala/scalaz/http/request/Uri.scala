@@ -60,18 +60,18 @@ sealed trait Uri {
   /**
    * Returns the query string split into values by <code>'='</code>.
    */
-  lazy val parameters = queryString ∘ (Util.parameters(_))
+  lazy val parameters = queryString map (Util.parameters(_))
 
   /**
    * Returns the query string split into values by <code>'='</code> backed with a hash map.
    */
-  lazy val parametersMap = parameters ∘ (asHashMap[List, NonEmptyList](_))
+  lazy val parametersMap = parameters map (asHashMap[List, NonEmptyList](_))
 
   /**
    * Returns the query string split into values by <code>'='</code> (removing duplicate values for a given key) backed
    * with a hash map.
    */
-  lazy val parametersMapHeads = parametersMap ∘ (mapHeads(_))
+  lazy val parametersMapHeads = parametersMap map (mapHeads(_))
 }
 
 trait Uris {

@@ -96,7 +96,7 @@ sealed trait Request[IN[_]] {
    * Provides look up for POST request parameters in the request body. Only the first invocation uses the given
    * fold-left and subsequent invocations look-up using a memoisation table (scoped to each request).
    */
-  def post(implicit f: Foldable[IN]) = new {
+  def post(implicit f: Foldable[IN]) = new Request.PostBody{
     val parameters = m(f => Util.parameters(ma(body).listl(f) map (_.toChar)))(f)
     lazy val parametersMap = asHashMap[List, NonEmptyList](parameters)
     lazy val parametersMapHeads = mapHeads(parametersMap)
@@ -117,7 +117,7 @@ sealed trait Request[IN[_]] {
   /**
    *  Returns the first occurrence of the given request parameter in the request URI.
    */
-  def !(p: String) = line.uri.parametersMapHeads ∗ (_.get(p.toList))
+  def !(p: String) = line.uri.parametersMapHeads flatMap (_.get(p.toList))
 
   /**
    *  Returns the first occurrence of a given request parameter in the request URI.
@@ -132,7 +132,7 @@ sealed trait Request[IN[_]] {
   /**
    * Returns all occurrences of the given request parameter in the request URI.
    */
-  def !!(p: String) : List[List[Char]] = OptionNonEmptyListList(line.uri.parametersMap ∗ (_.get(p.toList)))
+  def !!(p: String) : List[List[Char]] = OptionNonEmptyListList(line.uri.parametersMap flatMap (_.get(p.toList)))
 
   /**
    * Returns all occurrences of a given request parameter in the request URI.
@@ -417,6 +417,11 @@ object Request {
     val line = l
     val headers = h
     val body = b
+  }
+
+  sealed trait PostBody {
+    def |(p: String):Option[List[Char]]
+    def ||(p: String): List[List[Char]]
   }
 
   object MethodPath {

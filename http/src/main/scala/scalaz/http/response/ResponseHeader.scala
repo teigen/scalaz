@@ -134,8 +134,8 @@ trait ResponseHeaders {
    */
   implicit def StringResponseHeader(s: String): Option[ResponseHeader] =
     ResponseHeader.headers find { case (n, h) => n == s } map (_._2) orElse
-    (s: Option[GeneralHeader]) ∘ (scalaz.http.response.General(_)) orElse
-    (s: Option[EntityHeader]) ∘ (scalaz.http.response.Entity(_))
+    (s: Option[GeneralHeader]).map(scalaz.http.response.General(_)) orElse
+    (s: Option[EntityHeader]).map(scalaz.http.response.Entity(_))
 }
 
 /**

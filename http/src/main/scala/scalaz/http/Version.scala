@@ -48,7 +48,7 @@ trait Versions {
       val major = s charAt 5
       val minor = s charAt 7
 
-      List(major, minor) ↦ ((c: Char) => isDigit(c).option(c.toLong - 48L)) map {case List(maj, min) => Version.version(maj, min)}
+      List(major, minor) traverse ((c: Char) => isDigit(c).option(c.toLong - 48L)) map {case List(maj, min) => Version.version(maj, min)}
     }
 }
 

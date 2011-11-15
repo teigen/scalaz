@@ -9,7 +9,7 @@ object ScalazBuild extends Build {
     id        = "scalaz",
     base      = file("."),
     settings  = standardSettings,
-    aggregate = Seq(core, http, geo, example, scalacheckBinding, scalacheckGeo, tests, full)
+    aggregate = Seq(core, http, httpServlet, geo, example, scalacheckBinding, scalacheckGeo, tests, full)
   )
 
   lazy val core = Project(
@@ -33,6 +33,13 @@ object ScalazBuild extends Build {
     id           = "scalaz-http",
     base         = file("http"),
     dependencies = Seq(core),
+    settings     = standardSettings
+  )
+
+  lazy val httpServlet = Project(
+    id           = "scalaz-http-servlet",
+    base         = file("http-servlet"),
+    dependencies = Seq(http),
     settings     = standardSettings ++ Seq(
       libraryDependencies ++= Seq(Dependency.ServletApi)
     )
@@ -59,7 +66,7 @@ object ScalazBuild extends Build {
   lazy val example = Project(
     id           = "scalaz-example",
     base         = file("example"),
-    dependencies = Seq(core, geo, http),
+    dependencies = Seq(core, geo, httpServlet),
     settings     = standardSettings ++ Seq(
       libraryDependencies <++= (dependencyScalaVersion)(dsv => Seq(Dependency.Specs(dsv), Dependency.ServletApi))
     )

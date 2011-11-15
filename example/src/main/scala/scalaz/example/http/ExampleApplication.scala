@@ -3,11 +3,13 @@ package http
 
 import scalaz.{Request => _, _}
 import Scalaz._
-import scalaz.http._
+
+import http._
 import response._
 import request._
-import Slinky._
+
 import servlet._
+import Servlet._
 import HttpServlet.resource
 
 final class ExampleApplication extends StreamStreamServletApplication {
